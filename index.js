@@ -83,21 +83,20 @@ async function getKeyWordId(searchTerm) {
 
 // Fetch the people who AND the keywordIds
 async function getSkillsByKeywordIds(keywordIds) {
-  const skillsObj = {
-    skills: [],
-  };
+  let skills = [];
   for (let i = 0; i < keywordIds.length; i++) {
-    skillsObj.skills = [...skillsObj.skills, { keywordId: keywordIds[i], min: 3, max:5 }];
+   skills = [...skills, { keywordId: keywordIds[i], min: 3, max:5 }];
   }
-  //console.log(skillsObj);
 
   try {
-    const res = await axios.post(`${BASE_URL}/v0.1/companies/${companyId}/skills/search`,
-      { skills: skillsObj.skills }
-    );
+    const res = await axios.post(`${BASE_URL}/v0.1/companies/${companyId}/skills/search`, { skills });
 
     // Only printing the results here for this PoC
     //console.log(res.data.hits);
+    if (!res.data.hits) {
+      console.log('NOTHING FOUND');
+      return;
+    }
     console.log(`FOUND: ${res.data.hits.length} people with `)
     res.data.hits.forEach(x => {
       console.log(x.firstname, x.lastname)

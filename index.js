@@ -7,14 +7,13 @@
 
     2. Fetch the people who have all the skills listed in searchTerm (getSkillsByKeywordIds)
 
-
   Usage:
   $ node index.js terraform azure aws
 
   Example run:
   $ node index.js terraform azure aws
   SEARCH:  [ 'terraform', 'azure', 'aws' ]
-  FOUND: 6 people with 
+  FOUND: 6 people
   Eka
     Amazon Web Services 3
     Microsoft Azure 3
@@ -46,7 +45,7 @@ const axios = require('axios').default;
 const BASE_URL = 'https://api.cinode.com';
 const companyId = process.env.CINODE_COMPANYID;
 
-// For this PoC we also authentication every time the tool is run
+// For this PoC we also authenticate every time the tool is run
 async function authenticate() {
   const accessId = process.env.CINODE_ACCESSID;
   const accessSecret = process.env.CINODE_ACCESSSECRET;
@@ -85,23 +84,12 @@ async function getKeyWordId(searchTerm) {
 async function getSkillsByKeywordIds(keywordIds) {
   let skills = [];
   for (let i = 0; i < keywordIds.length; i++) {
-   skills = [...skills, { keywordId: keywordIds[i], min: 3, max:5 }];
+    skills = [...skills, { keywordId: keywordIds[i], min: 3, max: 5 }];
   }
 
   try {
     const res = await axios.post(`${BASE_URL}/v0.1/companies/${companyId}/skills/search`, { skills });
-
-    // Only printing the results here for this PoC
-    //console.log(res.data.hits);
-    if (!res.data.hits) {
-      console.log('NOTHING FOUND');
-      return;
-    }
-    console.log(`FOUND: ${res.data.hits.length} people with `)
-    res.data.hits.forEach(x => {
-      console.log(x.firstname, x.lastname)
-      x.skills.forEach(a => console.log('\t', a.masterSynonymName, a.level));
-    });
+    return res.data;
   } catch (err) {
     console.log(`ERROR getSkillsByKeywordIds :: ${keywordIds} :: ${err.message}`);
     process.exit(1);
@@ -116,7 +104,19 @@ async function doQuery(searchTerms) {
     const res = await getKeyWordId(searchTerms[i]);
     keywordIds = [...keywordIds, res];
   }
-  await getSkillsByKeywordIds(keywordIds);
+
+  const res = await getSkillsByKeywordIds(keywordIds);
+
+  // Only printing the results here for this PoC
+  if (!res.hits) {
+    console.log('NOTHING FOUND');
+    return;
+  }
+  console.log(`FOUND: ${res.hits.length} people`)
+  res.hits.forEach(x => {
+    console.log(x.firstname, x.lastname)
+    x.skills.forEach(a => console.log('\t', a.masterSynonymName, a.level));
+  });
 }
 
 const searchTerms = process.argv.slice(2);

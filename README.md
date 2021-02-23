@@ -14,7 +14,7 @@ Case 1:
 ```
 $ node index.js gcp terraform node
 SEARCH:  [ 'gcp', 'terraform', 'node' ]
-FOUND: 2 people with 
+FOUND: 2 people
 Person One
 	 Node.js 3
 	 Terraform 3

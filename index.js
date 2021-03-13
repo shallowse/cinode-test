@@ -100,6 +100,7 @@ async function getSkillsByKeywordIds(keywordIds) {
 (async () => {
   const searchTerms = process.argv.slice(2);
   console.log('SEARCH: ', searchTerms);
+
   await authenticate();
 
   let keywordIds = [];

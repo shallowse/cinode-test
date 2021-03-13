@@ -96,7 +96,10 @@ async function getSkillsByKeywordIds(keywordIds) {
   }
 }
 
-async function doQuery(searchTerms) {
+// do query
+(async () => {
+  const searchTerms = process.argv.slice(2);
+  console.log('SEARCH: ', searchTerms);
   await authenticate();
 
   let keywordIds = [];
@@ -117,8 +120,4 @@ async function doQuery(searchTerms) {
     console.log(x.firstname, x.lastname)
     x.skills.forEach(a => console.log('\t', a.masterSynonymName, a.level));
   });
-}
-
-const searchTerms = process.argv.slice(2);
-console.log('SEARCH: ', searchTerms);
-doQuery(searchTerms);
+})();
